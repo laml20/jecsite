@@ -640,7 +640,7 @@ envelope.addEventListener('click', () => {
   sfx.play();
   music.volume = 0;
   music.play().catch(() => showUnmuteButton());
-  fadeIn(music, 0.35, 2000);   // ramp volume with rAF, not with .play()
+  fadeIn(music, 0.25, 2000);   // ramp volume with rAF, not with .play()
   runTransition();
 });
 ```

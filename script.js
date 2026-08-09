@@ -86,7 +86,7 @@
     music.volume = 0;
     var playPromise = music.play();
     if (playPromise && playPromise.then) {
-      playPromise.then(function () { fadeAudio(music, 0.35, 2000); })
+      playPromise.then(function () { fadeAudio(music, 0.25, 2000); })
         .catch(function () {}); // autoplay blocked — plays muted/paused, no fallback UI per client request
     }
 
