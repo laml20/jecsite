@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mis Quince Jessica</title>
+<meta name="description" content="Invitación — Mis XV Años, Jessica Anahí Mendoza">
+<meta name="robots" content="noindex, nofollow">
+<!-- No OG image with her photo (§11) — using the envelope art only once a real export exists. -->
+
+<!-- Preload the two faces visible on screen 1. Files land per checklist.md §4;
+     until then this is a harmless miss. -->
+<link rel="preload" href="../assets/fonts/tangerine-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/cinzel-dec-400.woff2" as="font" type="font/woff2" crossorigin>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="marble-bg" aria-hidden="true"></div>
+
+<!-- Hidden until the invitation is revealed (§7.1 controls belong to
+     screen 2 only — the envelope "landing" screen shows neither). -->
+<header class="header-controls" id="main-header-controls">
+  <div class="lang-toggle" role="group" aria-label="Idioma / Language">
+    <button type="button" data-lang-btn="es" data-lang-active="es">Es</button>
+    <button type="button" data-lang-btn="en" data-lang-active="en">En</button>
+  </div>
+  <button type="button" class="music-toggle" id="music-toggle" data-i18n-aria="musicOn" aria-label="Silenciar música">
+    <svg class="music-toggle__icon music-toggle__icon--on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 9v6h4l5 4V5L8 9H4z"/>
+      <path d="M16 8.5a4 4 0 0 1 0 7"/>
+      <path d="M18.5 6a7.5 7.5 0 0 1 0 12"/>
+    </svg>
+    <svg class="music-toggle__icon music-toggle__icon--off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 9v6h4l5 4V5L8 9H4z"/>
+      <path d="M16 9l6 6M22 9l-6 6"/>
+    </svg>
+  </button>
+</header>
+
+<!-- ============================== SCREEN 1 ============================== -->
+<section id="envelope-screen">
+  <div class="envelope-wrap" id="envelope-wrap">
+    <button type="button" class="envelope envelope-pulse" id="envelope-btn" data-i18n-aria="ariaOpenEnvelope" aria-label="Abrir la invitación">
+      <!-- The wax seal is baked into invitacion.png (not a separate export),
+           so the tap/pulse animation runs on the whole envelope rather than
+           just the seal per §5 — see chat for the export needed to split it. -->
+      <img class="envelope__art" src="../assets/img/invitacion.png" alt="" width="1080" height="807" loading="eager" fetchpriority="high">
+      <span class="envelope__name" data-i18n="envelopeName">Jessica Anahí Mendoza</span>
+      <span class="envelope__eyebrow" data-i18n="envelopeEyebrow">Mis XV Años</span>
+    </button>
+  </div>
+  <p class="envelope-prompt" data-i18n="promptOpen">Oprima el sobre para ver la invitación</p>
+</section>
+
+<!-- ============================== SCREEN 2 ============================== -->
+<main id="invitation-screen">
+
+  <!-- 1. Hero -->
+  <section class="hero">
+    <div class="hero__titles">
+      <p class="hero__eyebrow" data-i18n="eyebrow">Mis XV Años</p>
+      <img class="hero__name" src="../assets/img/jessica.png" alt="Jessica Anahí Mendoza" width="1080" height="187" loading="eager">
+      <p class="hero__date" data-i18n="date">29 de agosto del 2026</p>
+    </div>
+    <div class="hero__countdown">
+      <div class="countdown" id="countdown" role="timer" aria-live="off">
+        <div class="countdown__group"><span class="countdown__digits" id="cd-days">000</span><span class="countdown__label" data-i18n="countdownDays">Días</span></div>
+        <span class="countdown__sep">:</span>
+        <div class="countdown__group"><span class="countdown__digits" id="cd-hours">00</span><span class="countdown__label" data-i18n="countdownHours">Horas</span></div>
+        <span class="countdown__sep">:</span>
+        <div class="countdown__group"><span class="countdown__digits" id="cd-minutes">00</span><span class="countdown__label" data-i18n="countdownMinutes">Minutos</span></div>
+        <span class="countdown__sep">:</span>
+        <div class="countdown__group"><span class="countdown__digits" id="cd-seconds">00</span><span class="countdown__label" data-i18n="countdownSeconds">Segundos</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Invitation message + parents/siblings -->
+  <section>
+    <div class="invitation">
+      <p class="intro-text reveal" data-i18n="intro" style="--i:0">Ha llegado un momento muy especial en mi vida, un día en el que he soñado con alegría y emoción…</p>
+      <img class="flourish reveal" style="--i:1" src="../assets/img/rosa.png" alt="" width="1080" height="253" loading="lazy">
+      <p class="blessing-line reveal" data-i18n="blessing" style="--i:2">Con la bendición de mis padres,</p>
+      <img class="family-name-img reveal" style="--i:3" src="../assets/img/josemaria.png" alt="José Arturo y María de Jesús Mendoza" width="1080" height="160">
+      <p class="siblings-label reveal" data-i18n="siblingsLabel" style="--i:4">y mis hermanos,</p>
+      <img class="family-name-img reveal" style="--i:5" src="../assets/img/lizethdavid.png" alt="Lizeth Alejandra y David Arturo Mendoza" width="1080" height="149">
+      <p class="invite-line reveal" data-i18n="inviteLine" style="--i:6">nos complace invitarle a ser parte de este día tan especial</p>
+      <img class="flourish flourish--flipped reveal" style="--i:7" src="../assets/img/rosa.png" alt="" width="1080" height="253" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 3. Misa -->
+  <section class="section--split" id="misa">
+    <div class="invitation">
+      <div class="section__inner">
+        <div class="section__figure reveal" style="--i:0">
+          <img class="venue-card__icon" src="../assets/img/misa.png" alt="" width="64" height="64" loading="lazy">
+        </div>
+        <div class="section__content reveal" style="--i:1">
+          <h2 class="section-heading" data-i18n="misaHeading">Misa</h2>
+          <p class="venue-card__venue" data-i18n="misaVenue">St. Ambrose Catholic Church</p>
+          <p class="venue-card__address">4213 Mangum Rd,<br>Houston, TX 77092</p>
+          <p class="venue-card__time" data-i18n="misaTime">12:00 PM</p>
+          <a class="map-btn" href="https://www.google.com/maps/dir/?api=1&destination=4213+Mangum+Rd,+Houston,+TX+77092" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>
+            <span data-i18n="mapButton">Ver ubicación</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <img class="flourish reveal" src="../assets/img/simple.png" alt="" width="1042" height="144" loading="lazy">
+
+  <!-- 4. Recepción -->
+  <section class="section--split is-reversed" id="recepcion">
+    <div class="invitation">
+      <div class="section__inner">
+        <div class="section__figure reveal" style="--i:0">
+          <img class="venue-card__icon" src="../assets/img/recepcion.png" alt="" width="64" height="64" loading="lazy">
+        </div>
+        <div class="section__content reveal" style="--i:1">
+          <h2 class="section-heading" data-i18n="recepcionHeading">Recepción</h2>
+          <p class="venue-card__venue" data-i18n="recepcionVenue">Champions Ballroom</p>
+          <p class="venue-card__address" id="recepcion-address">5385 W Richey Rd,<br>Houston, TX 77066</p>
+          <p class="venue-card__time" data-i18n="recepcionTime">6:00 PM</p>
+          <a class="map-btn" href="https://www.google.com/maps/dir/?api=1&destination=5385+W+Richey+Rd,+Houston,+TX+77066" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>
+            <span data-i18n="mapButton">Ver ubicación</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Itinerario del Evento -->
+  <section id="itinerario">
+    <div class="invitation">
+      <h2 class="section-heading reveal" style="--i:0" data-i18n="itineraryHeading">Itinerario del Evento</h2>
+      <div class="itinerary-timeline">
+
+        <div class="itinerary-row reveal" style="--i:1">
+          <p class="itinerary-row__text">
+            <span class="timeline__time" data-i18n="itineraryDinnerTime">6:00 PM – 8:00 PM</span>
+            <span class="timeline__label" data-i18n="itineraryDinner">Cena</span>
+          </p>
+          <img class="itinerary-row__icon" src="../assets/img/cena.png" alt="" width="84" height="84" loading="lazy">
+        </div>
+
+        <img class="itinerary-sparkle" src="../assets/img/brillo.png" alt="" loading="lazy">
+
+        <div class="itinerary-row reveal" style="--i:1">
+          <img class="itinerary-row__icon" src="../assets/img/baile.png" alt="" width="84" height="84" loading="lazy">
+          <p class="itinerary-row__text">
+            <span class="timeline__time">7:00 PM</span>
+            <span class="timeline__label" data-i18n="itineraryBlessing">Bendición de los alimentos</span>
+          </p>
+        </div>
+
+        <img class="itinerary-sparkle" src="../assets/img/brillo.png" alt="" loading="lazy">
+
+        <div class="itinerary-row reveal" style="--i:1">
+          <p class="itinerary-row__text">
+            <span class="timeline__time">8:00 PM</span>
+            <span class="timeline__label" data-i18n="itineraryPresentation">Presentación + Vals</span>
+          </p>
+          <img class="itinerary-row__icon" src="../assets/img/brindis.png" alt="" width="84" height="84" loading="lazy">
+        </div>
+
+        <img class="itinerary-sparkle" src="../assets/img/brillo.png" alt="" loading="lazy">
+
+        <div class="itinerary-row reveal" style="--i:1">
+          <img class="itinerary-row__icon" src="../assets/img/celebracion.png" alt="" width="84" height="84" loading="lazy">
+          <p class="itinerary-row__text">
+            <span class="timeline__time">9:00 PM</span>
+            <span class="timeline__label" data-i18n="itineraryDancing">Baile + Celebración</span>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Código de Vestimenta -->
+  <section class="section--split" id="vestimenta">
+    <div class="invitation">
+      <div class="section__inner">
+        <div class="section__figure reveal" style="--i:0">
+          <img class="section__icon" src="../assets/img/vestimenta.png" alt="" width="64" height="64" loading="lazy">
+        </div>
+        <div class="section__content reveal" style="--i:1">
+          <h2 class="section-heading" data-i18n="dressCodeHeading">Código de Vestimenta</h2>
+          <p class="section-body" data-i18n="dressCodeBody">Amablemente solicitamos a nuestros invitados que se abstengan de vestir los colores rosa y dorado, ya que están reservados exclusivamente para la quinceañera</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Regalos -->
+  <section class="section--split is-reversed" id="regalos">
+    <div class="invitation">
+      <div class="section__inner">
+        <div class="section__figure reveal" style="--i:0">
+          <img class="section__icon" src="../assets/img/regalos.png" alt="" width="64" height="64" loading="lazy">
+        </div>
+        <div class="section__content reveal" style="--i:1">
+          <h2 class="section-heading" data-i18n="giftsHeading">Regalos</h2>
+          <p class="section-body" data-i18n="giftsBody">¡Su presencia es el regalo más significativo para nosotros! Sin embargo, si desea tener un detalle con la quinceañera, se agradece profundamente 💵✉️</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. RSVP -->
+  <section class="section--split" id="rsvp">
+    <div class="invitation">
+      <div class="section__inner">
+        <div class="section__figure reveal" style="--i:0">
+          <img class="section__icon" src="../assets/img/sobre.png" alt="" width="64" height="64" loading="lazy">
+        </div>
+        <div class="section__content reveal" style="--i:1">
+          <h2 class="section-heading" data-i18n="rsvpHeading">Confirmar Asistencia</h2>
+          <p class="section-body" data-i18n="rsvpBody">¡Su presencia es muy importante para nosotros! Les solicitamos amablemente confirmar su asistencia antes del 15 de agosto de 2026</p>
+          <button type="button" class="rsvp-btn" id="rsvp-open-btn" data-i18n="rsvpButton">CONFIRMAR ASISTENCIA</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <img class="flourish reveal" src="../assets/img/simple.png" alt="" width="1042" height="144" loading="lazy">
+
+  <!-- 9. Closing -->
+  <section>
+    <div class="invitation">
+      <p class="closing-text reveal" data-i18n="closing" style="--i:0">Gracias por acompañarnos y por ser parte de este momento tan importante de mi vida</p>
+      <p class="signoff reveal" data-i18n="signoff" style="--i:1">Con mucho cariño,</p>
+      <img class="family-name-img reveal" style="--i:2" src="../assets/img/jessica.png" alt="Jessica Anahí Mendoza" width="1080" height="187">
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================== RSVP modal ============================== -->
+<div class="modal-overlay" id="rsvp-modal" role="dialog" aria-modal="true" aria-labelledby="rsvp-modal-heading">
+  <div class="modal" id="rsvp-modal-panel">
+    <button type="button" class="modal__close" id="rsvp-close" data-i18n-aria="modalClose" aria-label="Cerrar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+    </button>
+    <h2 id="rsvp-modal-heading" class="visually-hidden" data-i18n="rsvpHeading">Confirmar Asistencia</h2>
+
+    <!-- Step 1: phone -->
+    <div class="modal__step is-active" data-step="1">
+      <label class="modal__label" for="rsvp-phone" data-i18n="step1Label">Ingresa tu número de teléfono</label>
+      <input class="modal__input" id="rsvp-phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="(281) 555-0134">
+      <p class="modal__helper" data-i18n="step1Helper">Usa el número donde recibiste la invitación.</p>
+      <button type="button" class="modal__primary-btn" data-action="lookup" data-i18n="step1Continue">Continuar</button>
+    </div>
+
+    <!-- Step 2b: not found -->
+    <div class="modal__step" data-step="2b">
+      <p class="modal__error" data-i18n="step2bNotFound">No encontramos ese número…</p>
+      <button type="button" class="modal__primary-btn" data-action="retry" data-i18n="step2bRetry">Intentar de nuevo</button>
+      <button type="button" class="modal__secondary-link" data-action="continue-anyway" data-i18n="step2bContinueAnyway">Continuar de todos modos</button>
+    </div>
+
+    <!-- Step 2a: found (or unmatched, continuing anyway) -->
+    <div class="modal__step" data-step="2a">
+      <div id="rsvp-guest-greeting">
+        <p class="modal__greeting-name" id="rsvp-guest-name"></p>
+        <p class="modal__greeting-sub" data-i18n="step2aGreetingSuffix">¡Qué gusto verte por aquí!</p>
+      </div>
+      <div class="modal__field" id="rsvp-name-field" hidden>
+        <label class="modal__label" data-i18n="step2aNameLabel">Tu nombre</label>
+        <input class="modal__input" id="rsvp-name-input" type="text" data-i18n-placeholder="step2aNamePlaceholder" placeholder="Nombre completo">
+      </div>
+      <p class="modal__greeting-sub" style="margin-top:1.5rem;font-family:var(--font-heading);font-size:20px;color:var(--gold-600)" data-i18n="step2aQuestion">¿Nos acompañarán?</p>
+      <div class="modal__choice-row">
+        <button type="button" class="modal__choice-btn is-primary" data-action="attend-yes" data-i18n="step2aYes">Sí, asistiremos</button>
+        <button type="button" class="modal__choice-btn" data-action="attend-no" data-i18n="step2aNo">No podremos asistir</button>
+      </div>
+      <a href="#" class="modal__secondary-link" id="rsvp-lang-hint" hidden></a>
+    </div>
+
+    <!-- Step 3: counts (attending only) -->
+    <div class="modal__step" data-step="3">
+      <div class="stepper-row">
+        <span class="stepper-row__label" data-i18n="step3AdultsLabel">Adultos</span>
+        <div class="stepper">
+          <button type="button" class="stepper__btn" data-stepper="adults" data-delta="-1" aria-label="−">−</button>
+          <span class="stepper__value" data-stepper-value="adults">1</span>
+          <button type="button" class="stepper__btn" data-stepper="adults" data-delta="1" aria-label="+">+</button>
+        </div>
+      </div>
+      <div class="stepper-row">
+        <span class="stepper-row__label" data-i18n="step3KidsLabel">Niños</span>
+        <div class="stepper">
+          <button type="button" class="stepper__btn" data-stepper="kids" data-delta="-1" aria-label="−">−</button>
+          <span class="stepper__value" data-stepper-value="kids">0</span>
+          <button type="button" class="stepper__btn" data-stepper="kids" data-delta="1" aria-label="+">+</button>
+        </div>
+      </div>
+
+      <div class="cap-notice" id="rsvp-cap-notice" hidden>
+        <p id="rsvp-cap-message"></p>
+        <div class="stepper-row" style="border:0">
+          <span class="stepper-row__label" data-i18n="step3ExtraLabel">lugares adicionales</span>
+          <div class="stepper">
+            <button type="button" class="stepper__btn" data-stepper="extra" data-delta="-1" aria-label="−">−</button>
+            <span class="stepper__value" data-stepper-value="extra">0</span>
+            <button type="button" class="stepper__btn" data-stepper="extra" data-delta="1" aria-label="+">+</button>
+          </div>
+        </div>
+        <textarea class="cap-notice__reason" id="rsvp-reason" data-i18n-placeholder="step3ReasonPlaceholder" placeholder="Cuéntanos brevemente (opcional)"></textarea>
+      </div>
+
+      <button type="button" class="modal__primary-btn" data-action="to-step4" data-i18n="step1Continue" style="margin-top:2rem">Continuar</button>
+    </div>
+
+    <!-- Step 4: optional fields -->
+    <div class="modal__step" data-step="4">
+      <button type="button" class="modal__secondary-link" id="rsvp-show-alt-phone" data-i18n="step4AddPhone">+ Agregar otro número</button>
+      <div class="modal__field" id="rsvp-alt-phone-field" hidden>
+        <label class="modal__label" data-i18n="step4AltPhoneLabel">Otro número de teléfono</label>
+        <input class="modal__input" id="rsvp-alt-phone" type="tel" inputmode="numeric">
+      </div>
+      <div class="modal__field">
+        <label class="modal__label" data-i18n="step4MessageLabel">Mensaje para Jessica</label>
+        <textarea class="modal__textarea" id="rsvp-message" data-i18n-placeholder="step4MessagePlaceholder" placeholder="Escribe un mensaje (opcional)"></textarea>
+      </div>
+      <button type="button" class="modal__primary-btn" data-action="submit" data-i18n="step5Submit">Enviar confirmación</button>
+    </div>
+
+    <!-- Success -->
+    <div class="modal__step" data-step="success">
+      <div class="success-panel">
+        <img class="success-panel__sparkle" src="../assets/img/brillo.png" alt="" loading="lazy">
+        <p class="modal__greeting-name" data-i18n="step5SuccessTitle">¡Gracias! Tu confirmación fue recibida.</p>
+        <p class="success-panel__echo" id="rsvp-success-echo"></p>
+        <p class="success-panel__echo" id="rsvp-request-note" data-i18n="step5RequestNote" hidden></p>
+        <div class="cal-links" id="rsvp-cal-links" hidden>
+          <a class="cal-link" href="../assets/cal/misa.ics" download data-i18n="addToCalendarMisa">Misa (12:00 PM)</a>
+          <a class="cal-link" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Misa%20%E2%80%94%20Mis%20XV%20A%C3%B1os&dates=20260829T170000Z/20260829T180000Z&location=St.%20Ambrose%20Catholic%20Church%2C%204213%20Mangum%20Rd%2C%20Houston%2C%20TX%2077092" target="_blank" rel="noopener">Google Calendar ↗</a>
+          <a class="cal-link" href="../assets/cal/recepcion.ics" download data-i18n="addToCalendarRecepcion">Recepción (6:00 PM)</a>
+          <a class="cal-link" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Recepci%C3%B3n%20%E2%80%94%20Mis%20XV%20A%C3%B1os&dates=20260829T230000Z/20260830T040000Z&location=5385%20W%20Richey%20Rd%2C%20Houston%2C%20TX%2077066" target="_blank" rel="noopener">Google Calendar ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Failure -->
+    <div class="modal__step" data-step="failure">
+      <p class="modal__error" data-i18n="step5Failure">No pudimos enviar tu confirmación…</p>
+      <a class="modal__primary-btn" id="rsvp-sms-fallback" href="#" data-i18n="step5SmsFallback">Enviar por mensaje de texto</a>
+    </div>
+
+  </div>
+</div>
+
+<audio id="sfx" src="../assets/audio/sparkle.mp3" preload="auto"></audio>
+<audio id="music" src="../assets/audio/music.mp3" loop preload="auto"></audio>
+
+<script src="../i18n.js"></script>
+<script src="../script.js"></script>
+</body>
+</html>

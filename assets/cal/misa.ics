@@ -1,0 +1,14 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Mis XV Años Jessica//Invitacion//ES
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:misa-jessica-xv-2026@misquincejessica
+DTSTAMP:20260807T000000Z
+DTSTART;TZID=America/Chicago:20260829T120000
+DTEND;TZID=America/Chicago:20260829T130000
+SUMMARY:Misa — Mis XV Años de Jessica
+DESCRIPTION:Misa de Mis XV Años — Jessica Anahí Mendoza
+LOCATION:St. Ambrose Catholic Church\, 4213 Mangum Rd\, Houston\, TX 77092
+END:VEVENT
+END:VCALENDAR

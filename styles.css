@@ -1,0 +1,766 @@
+/* ==========================================================================
+   Mis XV Años — Jessica Anahí Mendoza
+   Shared stylesheet for the gate page and the invitation.
+   See website-spec.md for the design rationale behind each rule.
+   ========================================================================== */
+
+/* --- Fonts (§3.2) -------------------------------------------------------
+   Files are not present yet — see checklist.md §4. Once the six woff2
+   files land in /assets/fonts, these @font-face rules activate
+   automatically; until then the fallback stacks in --font-* carry the
+   page. Do not remove the fallbacks after the real fonts arrive. */
+@font-face { font-family: 'Tangerine';         src: url('assets/fonts/tangerine-400.woff2')     format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Great Vibes';       src: url('assets/fonts/great-vibes-400.woff2')   format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Cinzel Decorative'; src: url('assets/fonts/cinzel-dec-400.woff2')    format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Source Serif 4';    src: url('assets/fonts/source-serif-400.woff2')  format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Source Serif 4';    src: url('assets/fonts/source-serif-400-italic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Lancelot';          src: url('assets/fonts/lancelot-400.woff2')      format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Ovo';               src: url('assets/fonts/ovo-400.woff2')           format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+
+:root {
+  /* --- Design tokens (§4) --- */
+  --blush-100: #FDEEE9;
+  --blush-200: #F7DCD6;
+  --blush-300: #EFC7BE;
+  --gold-500:  #C9A227;
+  --gold-600:  #B08A5A;
+  --gold-700:  #8F6E45;
+  --ink-700:   #6B5540;
+  --paper:     #F4F1EC;
+
+  --font-script:   'Tangerine', 'Segoe Script', 'Bradley Hand', 'Apple Chancery', cursive;
+  --font-heading:  'Great Vibes', cursive;
+  --font-caps:     'Cinzel Decorative', Georgia, serif;
+  --font-display:  'Lancelot', Georgia, serif;
+  --font-body:     'Ovo', Georgia, serif;
+  --font-body-alt: 'Source Serif 4', Georgia, serif;
+
+  --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--blush-200);
+  color: var(--ink-700);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.7;
+  overscroll-behavior-y: contain; /* §7.7 — required, not optional */
+  -webkit-tap-highlight-color: transparent;
+}
+/* While the envelope hasn't been opened yet, #invitation-screen still
+   occupies layout height (visibility:hidden, not display:none — needed
+   so the clip-path wipe can animate instantly at reveal). Without this,
+   the landing screen would be scrollable into that empty space. */
+body.pre-reveal { overflow: hidden; height: 100dvh; }
+img { max-width: 100%; display: block; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+a { color: inherit; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+:focus-visible { outline: 2px solid var(--gold-600); outline-offset: 3px; }
+
+/* --- Marble background (§3.3) --------------------------------------------
+   Blush gradient stays the base layer. marble.png (735×1300, the raw
+   Canva plate) is mirror-tiled vertically into marble-tile.webp — flip +
+   stack, seamless by construction since the join meets identical rows —
+   and layered on top at low opacity as a translucent texture rather than
+   replacing the gradient. Grain overlay stays on top of both. */
+.marble-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(120% 60% at 50% 0%, var(--blush-100), var(--blush-200) 55%, var(--blush-300) 100%);
+}
+.marble-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.60;
+  background-image: url('assets/img/marble-tile.webp');
+  background-repeat: repeat-y;
+  background-size: 100% auto;
+  background-position: top center;
+}
+.marble-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ==========================================================================
+   Screen 1 — Envelope (§5)
+   ========================================================================== */
+#envelope-screen {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  opacity: 0;
+  animation: bg-fade-in 400ms var(--ease-soft) forwards;
+}
+@keyframes bg-fade-in { to { opacity: 1; } }
+
+.envelope-wrap {
+  width: 82%;
+  max-width: 420px;
+  opacity: 0;
+  transform: scale(0.94);
+  animation: envelope-in 900ms 300ms var(--ease-soft) forwards;
+}
+@media (min-width: 900px) { .envelope-wrap { max-width: 520px; } }
+@keyframes envelope-in { to { opacity: 1; transform: scale(1); } }
+
+.envelope {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1080 / 807; /* matches invitacion.png's cropped content box */
+  padding: 0;
+  border: 0;
+  background: none;
+  display: block;
+  cursor: pointer;
+  transform-origin: center;
+}
+/* The wax seal is baked into invitacion.png rather than a separate export
+   (see §5 / §3.1), so the "tap invites you in" pulse and the tap-press
+   feedback both run on the whole envelope instead of just the seal. */
+.envelope-pulse { animation: envelope-pulse 2.4s 2s infinite ease-in-out; }
+@keyframes envelope-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.025); } }
+.envelope:active { animation-play-state: paused; transform: scale(0.97); }
+
+.envelope__art { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+.envelope__name {
+  position: absolute;
+  top: 74%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-script);
+  font-size: clamp(27px, 4.5vw, 44px);
+  color: var(--gold-700);
+  opacity: 0;
+  animation: text-fade-in 600ms 1200ms var(--ease-soft) forwards;
+}
+.envelope__eyebrow {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-caps);
+  font-size: clamp(15px, 4vw, 20px);
+  letter-spacing: normal;
+  color: var(--gold-700);
+  opacity: 0;
+  animation: text-fade-in 600ms 1200ms var(--ease-soft) forwards;
+}
+@keyframes text-fade-in { to { opacity: 1; } }
+
+.envelope-wrap.is-nudging .envelope { animation: envelope-nudge 600ms ease-in-out; }
+@keyframes envelope-nudge { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(2deg); } }
+
+.envelope-prompt {
+  margin-top: 32px;
+  font-family: var(--font-body-alt);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--gold-700);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: prompt-in 1000ms 8000ms var(--ease-soft) forwards;
+}
+@keyframes prompt-in { to { opacity: 1; transform: translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  #envelope-screen, .envelope-wrap, .envelope__name, .envelope__eyebrow, .envelope-prompt {
+    animation: none !important; opacity: 1 !important; transform: none !important;
+  }
+  .envelope-pulse { animation: none !important; }
+}
+
+/* ==========================================================================
+   Sparkle transition (§6)
+   ========================================================================== */
+.sparkle-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+.sparkle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  background-image: url('assets/img/brillo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  will-change: transform, opacity;
+  animation: spiral-out 1400ms var(--delay, 0ms) var(--ease-soft) forwards;
+}
+@keyframes spiral-out {
+  0%   { transform: rotate(var(--angle)) translateX(0) rotate(0) scale(0); opacity: 0; }
+  15%  { opacity: 1; }
+  100% { transform: rotate(var(--angle)) translateX(var(--dist)) rotate(var(--spin)) scale(0.2); opacity: 0; }
+}
+
+#invitation-screen {
+  visibility: hidden;
+  clip-path: circle(0% at 50% 45%);
+}
+#invitation-screen.is-revealing,
+#invitation-screen.is-revealed {
+  visibility: visible;
+}
+#invitation-screen.is-revealing {
+  animation: circle-wipe 1100ms var(--ease-soft) forwards;
+}
+#invitation-screen.is-revealed { clip-path: none; }
+@keyframes circle-wipe { to { clip-path: circle(150% at 50% 45%); } }
+
+#invitation-screen.is-returning {
+  visibility: visible;
+  animation: circle-wipe-reverse 1100ms var(--ease-soft) forwards;
+}
+@keyframes circle-wipe-reverse { from { clip-path: circle(150% at 50% 45%); } to { clip-path: circle(0% at 50% 45%); } }
+
+.envelope-wrap.is-exiting {
+  animation: envelope-exit 500ms var(--ease-soft) forwards;
+}
+@keyframes envelope-exit { to { transform: scale(1.15); opacity: 0; } }
+
+/* The prompt text sits outside .envelope-wrap as a sibling, so it needs
+   its own fade-out in step with the envelope's exit — otherwise it lags
+   behind, fully visible, until the whole screen is hard-cut to display:none. */
+.envelope-wrap.is-exiting ~ .envelope-prompt {
+  animation: prompt-out 350ms var(--ease-soft) forwards;
+}
+@keyframes prompt-out { to { opacity: 0; transform: translateY(8px); } }
+
+/* §7.7 — once opened, the envelope's entrance/exit keyframes are done;
+   JS drives transform/opacity directly for the pull-to-return preview. */
+.envelope-wrap.is-opened { animation: none; }
+#envelope-screen.is-pull-preview { position: fixed; inset: 0; z-index: 35; }
+
+@media (prefers-reduced-motion: reduce) {
+  #invitation-screen { transition: opacity 400ms; clip-path: none; }
+  #invitation-screen.is-revealing, #invitation-screen.is-revealed { opacity: 1; }
+  #envelope-screen.is-crossfading { transition: opacity 400ms; opacity: 0; }
+}
+
+/* ==========================================================================
+   Screen 2 — Invitation (§7)
+   ========================================================================== */
+#invitation-screen { position: relative; }
+
+.invitation { max-width: 480px; margin-inline: auto; padding-inline: 36px; position: relative; }
+@media (min-width: 900px) {
+  .invitation { max-width: 920px; }
+}
+
+/* --- Fixed header controls (§7.1) --- */
+.header-controls {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 20px;
+  pointer-events: none;
+}
+.header-controls > * { pointer-events: auto; }
+
+/* On the invitation page, the header controls belong to screen 2 only —
+   hidden on the envelope "landing" screen, revealed once opened. The
+   gate page's header has no id and stays visible by default. */
+#main-header-controls { display: none; }
+#main-header-controls.is-visible { display: flex; }
+@media (min-width: 920px) {
+  .header-controls { padding-inline: max(20px, calc((100vw - 920px) / 2)); }
+}
+
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(244, 241, 236, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(176, 138, 90, 0.35);
+  overflow: hidden;
+}
+.lang-toggle button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  font-family: var(--font-caps);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--gold-700);
+}
+.lang-toggle button.is-active { background: var(--gold-600); color: var(--paper); }
+
+.music-toggle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(244, 241, 236, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(176, 138, 90, 0.35);
+  color: var(--gold-700);
+}
+.music-toggle svg { width: 20px; height: 20px; }
+.music-toggle__icon--off { display: none; }
+.music-toggle.is-muted .music-toggle__icon--on { display: none; }
+.music-toggle.is-muted .music-toggle__icon--off { display: block; }
+
+@media (min-width: 768px) {
+  .lang-toggle button:hover, .music-toggle:hover, .map-btn:hover, .rsvp-btn:hover, .cal-link:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+  }
+  .lang-toggle button, .music-toggle, .map-btn, .rsvp-btn, .cal-link { transition: transform 150ms var(--ease-soft), filter 150ms; }
+}
+
+/* --- Section base + reveal (§7.4) --- */
+section { padding-block: 4.5rem; text-align: center; }
+.section__eyebrow-icon { width: 44px; height: 44px; margin-inline: auto 0.75rem; color: var(--gold-600); }
+h2.section-heading {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  line-height: 1.35;
+  margin-bottom: 0.6em;
+  color: var(--gold-600);
+  letter-spacing: normal;
+}
+@media (min-width: 768px) { h2.section-heading { font-size: 32px; } }
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 700ms var(--ease-soft), transform 700ms var(--ease-soft);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+.flourish { width: 200px; max-width: 60vw; height: auto; display: block; margin: 2rem auto; opacity: 0.9; }
+.flourish--flipped.reveal { transform: rotate(180deg) translateY(18px); }
+.flourish--flipped.reveal.is-visible { transform: rotate(180deg) translateY(0); }
+
+/* --- Hero (§7.2a) --- */
+.hero {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding-block-end: clamp(2rem, 10vh, 5rem);
+  padding-block-start: 4.5rem;
+}
+@media (max-height: 600px) { .hero { min-height: auto; padding-block: 3rem; } }
+
+.hero__titles {
+  align-self: center;
+  display: grid;
+  justify-items: center;
+  padding-inline: 1.5rem;
+  transform: translateY(-4%);
+}
+.hero__eyebrow {
+  font-family: var(--font-caps);
+  font-size: 18px;
+  letter-spacing: normal;
+  color: var(--gold-700);
+  margin-block-end: 28px;
+  opacity: 0;
+  animation: hero-fade-up 600ms 200ms var(--ease-soft) forwards;
+}
+@media (min-width: 900px) { .hero__eyebrow { margin-block-end: 34px; } }
+
+.hero__name {
+  width: 340px;
+  max-width: 86vw;
+  height: auto;
+  display: block;
+  margin-inline: auto;
+  opacity: 0;
+  animation: hero-fade-up 700ms 500ms var(--ease-soft) forwards;
+}
+@media (min-width: 900px) { .hero__name { width: 420px; } }
+
+.hero__date {
+  /* Ovo has no real italic design (Google Fonts ships it in one style
+     only), so font-style:italic on it fakes a slant. Source Serif 4 has
+     a genuine italic we already subset — use that instead, same fix as
+     the envelope prompt. */
+  font-family: var(--font-body-alt);
+  font-size: 17px;
+  font-style: italic;
+  color: var(--ink-700);
+  margin-block-start: 24px;
+  opacity: 0;
+  animation: hero-fade-up 600ms 800ms var(--ease-soft) forwards;
+}
+@media (min-width: 900px) { .hero__date { margin-block-start: 30px; } }
+@keyframes hero-fade-up { to { opacity: 1; } }
+
+.hero__countdown { justify-self: center; opacity: 0; transform: translateY(12px); animation: countdown-in 800ms 1600ms var(--ease-soft) forwards; }
+@keyframes countdown-in { to { opacity: 1; transform: translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__eyebrow, .hero__name, .hero__date, .hero__countdown { animation: none !important; opacity: 1 !important; transform: none !important; }
+}
+
+/* --- Countdown (§7.3) --- */
+.countdown {
+  display: flex;
+  gap: 0.45em;
+  align-items: baseline;
+  justify-content: center;
+  padding: 2rem 1.8rem;
+  min-height: 7rem;
+  min-width:350px;
+  background-image: url('assets/img/marco.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.countdown__group { display: flex; flex-direction: column; align-items: center; min-width: 2.2em; }
+.countdown__digits {
+  font-family: var(--font-caps);
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  color: var(--gold-700);
+  font-variant-numeric: tabular-nums;
+}
+.countdown__label {
+  font-family: var(--font-caps);
+  font-size: 7px;
+  letter-spacing: 0.18em;
+  color: var(--gold-700);
+  margin-top: 0.3em;
+}
+.countdown__sep { font-family: var(--font-caps); font-size: 18px; color: var(--gold-600); align-self: flex-start; margin-top: 0.1em; }
+.countdown__message {
+  font-family: var(--font-caps);
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  color: var(--gold-700);
+  padding: 0.6rem 1.4rem;
+}
+
+/* --- Intro / family --- */
+.intro-text {
+  font-family: var(--font-display);
+  font-size: 17px;
+  line-height: 1.9;
+  color: var(--ink-700);
+  max-width: 34em;
+  margin-inline: auto;
+}
+.blessing-line { font-family: var(--font-body); font-size: 15px; margin-top: 2rem; }
+.family-name {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  color: var(--gold-600);
+  margin-block: 0.4rem 1.2rem;
+}
+.family-name-img {
+  width: 300px;
+  max-width: 82vw;
+  height: auto;
+  display: block;
+  margin: 0.4rem auto 1.2rem;
+}
+.siblings-label { font-family: var(--font-body); font-size: 15px; margin-top: 1.5rem; }
+.invite-line { font-family: var(--font-body); font-size: 15px; margin-top: 1.5rem; max-width: 30em; margin-inline: auto; }
+
+/* --- Misa / Recepción --- */
+.venue-card { display: grid; justify-items: center; gap: 0.75rem; }
+.venue-card__icon { width: 128px; height: 128px; object-fit: contain; display: block; margin-inline: auto; }
+.venue-card__venue { font-family: var(--font-body); font-size: 19px; margin: 0; }
+.venue-card__address { font-family: var(--font-body); font-size: 18px; color: var(--gold-700); margin: 0.15rem 0 0; }
+.venue-card__time { font-family: var(--font-body); font-size: 18px; color: var(--gold-700); margin: 0.15rem 0 0; }
+.map-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-top: 0.75rem;
+  padding: 10px 18px;
+  border: 1px solid var(--gold-600);
+  border-radius: 999px;
+  font-family: var(--font-caps);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--gold-700);
+}
+.map-btn svg { width: 14px; height: 14px; }
+
+/* --- Itinerario timeline (zigzag, per mockup) --- */
+.itinerary-timeline { position: relative; max-width: 380px; margin-inline: auto; }
+.itinerary-timeline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: var(--gold-600);
+  opacity: 0.45;
+}
+.itinerary-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding-block: 1.5rem;
+}
+.itinerary-row__text { text-align: center; }
+.itinerary-row__icon { width: 115px; height: 115px; object-fit: contain; display: block; margin-inline: auto; }
+.timeline__time { display: block; font-family: var(--font-body); font-size: 12px; letter-spacing: 0.08em; color: var(--gold-700); margin-bottom: 0.3em; }
+.timeline__label { display: block; font-family: var(--font-body); font-size: 18px; color: var(--gold-600); line-height: 1.3; }
+.itinerary-sparkle {
+  position: relative;
+  z-index: 1;
+  display: block; width: 20px; height: 20px; margin: 0 auto;
+  transform: scale(0.5) rotate(-15deg); opacity: 0.4;
+}
+@supports (animation-timeline: view()) {
+  .itinerary-sparkle {
+    animation: sparkle-pulse linear both;
+    animation-timeline: view();
+    animation-range: entry 10% exit 90%;
+  }
+}
+@keyframes sparkle-pulse {
+  0%, 100% { transform: scale(0.5) rotate(-15deg); opacity: 0.4; }
+  50%      { transform: scale(1.15) rotate(15deg); opacity: 1; }
+}
+
+/* --- Dress code / Gifts / RSVP body text --- */
+.section-body { font-family: var(--font-body); font-size: 15px; max-width: 30em; margin-inline: auto; }
+.section__icon { width: 128px; height: 128px; object-fit: contain; margin-inline: auto; margin-bottom: 1rem; }
+
+.rsvp-btn {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 16px 32px;
+  background: var(--gold-600);
+  color: var(--paper);
+  border-radius: 999px;
+  font-family: var(--font-caps);
+  font-size: 13px;
+  letter-spacing: 0.18em;
+}
+.rsvp-deadline { font-family: var(--font-body-alt); font-style: italic; font-size: 13px; margin-top: 1rem; color: var(--gold-700); }
+
+/* --- Closing --- */
+.closing-text { font-family: var(--font-body); font-size: 15px; max-width: 28em; margin-inline: auto; }
+.signoff { font-family: var(--font-heading); font-size: 24px; color: var(--gold-600); margin-top: 1.5rem; }
+
+/* ==========================================================================
+   Desktop split sections (§7.8)
+   ========================================================================== */
+@media (min-width: 900px) {
+  .section--split .section__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    text-align: center;
+  }
+  .section--split .section__figure { order: 1; }
+  .section--split .section__content { order: 2; }
+  .section--split.is-reversed .section__figure { order: 2; }
+  .section--split.is-reversed .section__content { order: 1; }
+  .section--split .section__icon,
+  .section--split .venue-card__icon,
+  .section--split .section__eyebrow-icon {
+    max-width: 220px;
+    width: 100%;
+    height: auto;
+    margin-inline: auto;
+  }
+}
+
+/* ==========================================================================
+   RSVP modal (§9.4)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(107, 85, 64, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.is-open { display: flex; }
+.modal {
+  background: var(--paper);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 440px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 2rem 1.5rem;
+  position: relative;
+  text-align: center;
+}
+.modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold-700);
+}
+.modal__close svg { width: 20px; height: 20px; }
+
+.modal__label {
+  display: block;
+  font-family: var(--font-caps);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--gold-700);
+  margin-bottom: 0.75rem;
+}
+.modal__input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--blush-300);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  background: white;
+  color: var(--ink-700);
+}
+.modal__helper {
+  font-family: var(--font-body-alt);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--gold-700);
+  margin-top: 0.6rem;
+}
+.modal__primary-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 15px;
+  background: var(--gold-600);
+  color: var(--paper);
+  border-radius: 999px;
+  font-family: var(--font-caps);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+}
+.modal__primary-btn[disabled] { opacity: 0.6; }
+.modal__secondary-link {
+  display: block;
+  margin-top: 1rem;
+  font-family: var(--font-body-alt);
+  font-size: 13px;
+  text-decoration: underline;
+  color: var(--gold-700);
+}
+.modal__greeting-name { font-family: var(--font-heading); font-size: 26px; color: var(--gold-600); }
+.modal__greeting-sub { font-family: var(--font-body); font-size: 15px; margin-top: 0.5rem; }
+.modal__choice-row { display: grid; gap: 0.75rem; margin-top: 1.5rem; }
+.modal__choice-btn {
+  padding: 15px;
+  border: 1px solid var(--gold-600);
+  border-radius: 999px;
+  font-family: var(--font-caps);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--gold-700);
+}
+.modal__choice-btn.is-primary { background: var(--gold-600); color: var(--paper); }
+.modal__error { font-family: var(--font-body); font-size: 14px; color: var(--ink-700); margin-top: 0.5rem; text-align: left; }
+
+.stepper-row { display: flex; align-items: center; justify-content: space-between; padding-block: 0.75rem; border-bottom: 1px solid var(--blush-300); }
+.stepper-row__label { font-family: var(--font-body); font-size: 15px; }
+.stepper { display: flex; align-items: center; gap: 1rem; }
+.stepper__btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--gold-600);
+  color: var(--gold-700);
+  font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+}
+.stepper__btn[aria-disabled="true"] { opacity: 0.35; }
+.stepper__value { min-width: 1.5em; text-align: center; font-family: var(--font-caps); font-size: 16px; }
+
+.cap-notice { background: var(--blush-100); border-radius: 8px; padding: 1rem; margin-top: 1rem; text-align: left; font-size: 14px; }
+.cap-notice__reason {
+  width: 100%; margin-top: 0.75rem; padding: 10px 12px;
+  border: 1px solid var(--blush-300); border-radius: 8px;
+  font-family: var(--font-body); font-size: 14px; resize: vertical;
+}
+
+.modal__textarea {
+  width: 100%; min-height: 4.5em; padding: 12px 14px;
+  border: 1px solid var(--blush-300); border-radius: 8px;
+  font-family: var(--font-body); font-size: 15px; resize: vertical;
+}
+.modal__field { margin-top: 1.25rem; text-align: left; }
+
+.success-panel { text-align: center; }
+.success-panel__sparkle { width: 48px; height: 48px; object-fit: contain; margin-inline: auto 1rem; }
+.success-panel__echo { font-family: var(--font-body); font-size: 15px; margin-top: 0.5rem; }
+.cal-links { display: grid; gap: 0.75rem; margin-top: 1.5rem; }
+.cal-link {
+  display: block; padding: 13px; border: 1px solid var(--gold-600); border-radius: 999px;
+  font-family: var(--font-caps); font-size: 12px; letter-spacing: 0.08em; color: var(--gold-700);
+}
+
+.modal__step { display: none; }
+.modal__step.is-active { display: block; }
+
+/* ==========================================================================
+   Gate page (§11 routing)
+   ========================================================================== */
+.gate-page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+.gate-page__name { font-family: var(--font-script); font-size: clamp(36px, 10vw, 52px); color: var(--gold-700); }
+.gate-page__heading { font-family: var(--font-caps); font-size: 14px; letter-spacing: 0.28em; text-indent: 0.28em; color: var(--gold-700); margin-top: 0.75rem; }
+.gate-page__form { margin-top: 2.5rem; width: 100%; max-width: 340px; }
+.gate-page__error { color: var(--ink-700); font-size: 14px; margin-top: 0.75rem; display: none; }
+.gate-page__error.is-visible { display: block; }
+
+@media (min-width: 900px) {
+  .invitation, .intro-text { text-align: center; }
+}

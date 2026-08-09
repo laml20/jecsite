@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mis Quince Jessica</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="marble-bg" aria-hidden="true"></div>
+
+<header class="header-controls">
+  <div class="lang-toggle" role="group" aria-label="Idioma / Language">
+    <button type="button" data-lang-btn="es" data-lang-active="es">Es</button>
+    <button type="button" data-lang-btn="en" data-lang-active="en">En</button>
+  </div>
+  <span></span>
+</header>
+
+<main class="gate-page">
+  <p class="gate-page__name" data-i18n="gateName">Jessica Anahí Mendoza</p>
+  <p class="gate-page__heading" data-i18n="gateHeading">Mis XV Años</p>
+
+  <form class="gate-page__form" id="gate-form" novalidate>
+    <label class="modal__label" for="gate-phone" data-i18n="gateLabel">Ingresa tu número de teléfono</label>
+    <input class="modal__input" id="gate-phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="(281) 555-0134">
+    <p class="modal__helper" data-i18n="gateHelper">Usa el número donde recibiste la invitación.</p>
+    <button type="submit" class="modal__primary-btn" id="gate-submit" data-i18n="gateButton">Continuar</button>
+    <p class="gate-page__error" id="gate-error" data-i18n="gateNotFound">No encontramos ese número…</p>
+  </form>
+</main>
+
+<script src="i18n.js"></script>
+<script>
+(function () {
+  var lang = window.i18n.detectDefaultLang();
+  window.i18n.applyLang(lang);
+
+  document.querySelectorAll('[data-lang-btn]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      window.i18n.markToggled();
+      window.i18n.applyLang(btn.getAttribute('data-lang-btn'));
+    });
+  });
+
+  // Same deployed Apps Script web app as the RSVP modal (§9.3 / §11) —
+  // the identical constant lives in script.js.
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbwcRLkhaVRb5KR9CdKxc8g80sGAt8ekpA19RkZzupI-OtJvQaXF7nHiyO9cKCHm4F8a/exec';
+  var INVITE_PATH = '/a7f3k9/'; // TODO: replace with the real random path chosen per checklist.md §1
+
+  // Mock guest list for local testing before the real Sheet is wired up.
+  // Mirrors the fixture in script.js — try phone 2815550134.
+  var MOCK_GUESTS = [
+    { phone: '2815550134', name: 'Familia Ramírez', allotment: 5, lang: 'es' },
+    { phone: '7135550199', name: 'Tía Carmen', allotment: 1, lang: 'en' }
+  ];
+
+  function normalizePhone(raw) {
+    var digits = raw.replace(/\D/g, '');
+    if (digits.length === 11 && digits[0] === '1') digits = digits.slice(1);
+    return digits;
+  }
+
+  var form = document.getElementById('gate-form');
+  var input = document.getElementById('gate-phone');
+  var errorEl = document.getElementById('gate-error');
+  var submitBtn = document.getElementById('gate-submit');
+
+  var submitBtnLabel = submitBtn.textContent;
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var phone = normalizePhone(input.value);
+    if (!phone) return;
+    errorEl.classList.remove('is-visible');
+    submitBtn.setAttribute('disabled', 'disabled');
+    submitBtn.textContent = window.i18n.translate('step5Submitting', document.documentElement.lang);
+
+    lookupPhone(phone).then(function (result) {
+      submitBtn.removeAttribute('disabled');
+      submitBtn.textContent = submitBtnLabel;
+      if (result && result.found) {
+        window.location.replace(INVITE_PATH);
+      } else {
+        setTimeout(function () {
+          errorEl.classList.add('is-visible');
+        }, 400); // §11 — deliberate delay on failed lookups
+      }
+    });
+  });
+
+  function lookupPhone(phone) {
+    if (!ENDPOINT) {
+      var mock = MOCK_GUESTS.find(function (g) { return g.phone === phone; });
+      return Promise.resolve(mock ? { found: true } : { found: false });
+    }
+    return fetch(ENDPOINT + '?phone=' + encodeURIComponent(phone))
+      .then(function (r) { return r.json(); })
+      .catch(function () { return { found: false }; });
+  }
+})();
+</script>
+</body>
+</html>
