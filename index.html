@@ -46,7 +46,7 @@
 
   // Same deployed Apps Script web app as the RSVP modal (§9.3 / §11) —
   // the identical constant lives in script.js.
-  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbwcRLkhaVRb5KR9CdKxc8g80sGAt8ekpA19RkZzupI-OtJvQaXF7nHiyO9cKCHm4F8a/exec';
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbzId7wRB-NnlTPxSx86KNwkV2Db08nKNdIA15jdifLa7VDkHnROcMrrIsxUm4ZmBqg/exec';
   var INVITE_PATH = '/a7f3k9/'; // TODO: replace with the real random path chosen per checklist.md §1
 
   // Mock guest list for local testing before the real Sheet is wired up.
@@ -81,6 +81,18 @@
       submitBtn.removeAttribute('disabled');
       submitBtn.textContent = submitBtnLabel;
       if (result && result.found) {
+        // Carry the match through to the invitation's RSVP modal so it
+        // can skip straight to the greeting step instead of asking for
+        // the phone number a second time (§9.4). sessionStorage, not
+        // localStorage — scoped to this visit, not a standing preference.
+        try {
+          sessionStorage.setItem('jessi-gate-match', JSON.stringify({
+            phone: phone,
+            name: result.name,
+            allotment: result.allotment,
+            lang: result.lang
+          }));
+        } catch (e) {}
         window.location.replace(INVITE_PATH);
       } else {
         setTimeout(function () {

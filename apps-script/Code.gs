@@ -66,12 +66,20 @@ function doPost(e) {
   var lang = normalizeLang_(p.lang);
 
   // Re-check the allotment server-side — the client's cap is a UI
-  // courtesy, never enforcement (§11).
+  // courtesy, never enforcement (§11). Reduce adults first, then kids
+  // for whatever excess remains — reducing only adults isn't enough on
+  // its own: a request with adults=0 and a large kids count would sail
+  // straight past the cap untouched.
   if (attending === 'si') {
     var allotment = findAllotment_(phone);
-    if (allotment !== null && (adults + kids) > allotment) {
+    if (allotment !== null) {
       var over = (adults + kids) - allotment;
-      adults = Math.max(0, adults - over);
+      if (over > 0) {
+        var reduceAdults = Math.min(adults, over);
+        adults -= reduceAdults;
+        over -= reduceAdults;
+        kids = Math.max(0, kids - over);
+      }
     }
   }
 

@@ -11,7 +11,7 @@
      ========================================================== */
   // Deployed Apps Script web app (§9.1, checklist.md §6). Empty string
   // would run the RSVP modal in mock mode; live endpoint is wired in.
-  var RSVP_ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbwcRLkhaVRb5KR9CdKxc8g80sGAt8ekpA19RkZzupI-OtJvQaXF7nHiyO9cKCHm4F8a/exec';
+  var RSVP_ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbzId7wRB-NnlTPxSx86KNwkV2Db08nKNdIA15jdifLa7VDkHnROcMrrIsxUm4ZmBqg/exec';
 
   // Mirrors the Invitados sheet shape (§9.2) for local testing.
   var MOCK_GUESTS = [
@@ -119,6 +119,39 @@
     document.body.classList.remove('pre-reveal');
     if (headerControls) headerControls.classList.add('is-visible');
     setTimeout(startCountdown, 500); // hero countdown fade lands at 1.6s post-wipe; ticking starts once visible
+    showScrollHint();
+  }
+
+  /* ==========================================================
+     Scroll hint — two small pulsing chevrons. Only appears after
+     2s of sitting still on the hero (skipped entirely if the guest
+     scrolls before then), dismissed for good on first scroll after.
+     ========================================================== */
+  var scrollHintDismissed = false;
+  var scrollHintTimer = null;
+  function showScrollHint() {
+    if (scrollHintDismissed) return;
+    window.addEventListener('scroll', cancelScrollHintTimer, { passive: true });
+    scrollHintTimer = setTimeout(function () {
+      window.removeEventListener('scroll', cancelScrollHintTimer);
+      if (scrollHintDismissed) return;
+      var hint = document.getElementById('scroll-hint');
+      if (!hint) return;
+      hint.classList.add('is-visible');
+      window.addEventListener('scroll', dismissScrollHint, { passive: true });
+    }, 2000);
+  }
+  function cancelScrollHintTimer() {
+    scrollHintDismissed = true; // scrolled before it even appeared — never show it
+    clearTimeout(scrollHintTimer);
+    window.removeEventListener('scroll', cancelScrollHintTimer);
+  }
+  function dismissScrollHint() {
+    if (scrollHintDismissed) return;
+    scrollHintDismissed = true;
+    var hint = document.getElementById('scroll-hint');
+    if (hint) hint.classList.remove('is-visible');
+    window.removeEventListener('scroll', dismissScrollHint);
   }
 
   function spawnSparkles(count, inward) {
@@ -343,6 +376,17 @@
     var state = { phone: '', matched: false, guest: null, name: '', attending: null, adults: 1, kids: 0, extra: 0, reason: '', altPhone: '', message: '' };
     var lastFocused = null;
 
+    // §9.4 — a guest who already matched on the bare-domain gate page
+    // shouldn't be asked for their phone number a second time. The gate
+    // page stashes the match here (sessionStorage — scoped to this visit
+    // only, unlike the localStorage phone pre-fill below) right before
+    // redirecting; read it once, consumed on first use.
+    var gateMatch = null;
+    try {
+      var rawGateMatch = sessionStorage.getItem('jessi-gate-match');
+      if (rawGateMatch) gateMatch = JSON.parse(rawGateMatch);
+    } catch (e) {}
+
     function showStep(key) {
       panel.querySelectorAll('.modal__step').forEach(function (el) {
         el.classList.toggle('is-active', el.getAttribute('data-step') === key);
@@ -354,6 +398,16 @@
         var raw = localStorage.getItem('jessi-rsvp-submitted');
         return raw ? JSON.parse(raw) : null;
       } catch (e) { return null; }
+    }
+
+    function renderMatchedGuest(result) {
+      state.matched = true;
+      state.guest = result;
+      state.name = result.name;
+      document.getElementById('rsvp-guest-greeting').hidden = false;
+      document.getElementById('rsvp-guest-name').textContent = result.name;
+      document.getElementById('rsvp-name-field').hidden = true;
+      maybeShowLangHint(result.lang);
     }
 
     function openModal() {
@@ -387,6 +441,18 @@
         } else {
           showStep('4');
         }
+      } else if (state.matched && state.guest) {
+        // Already resolved earlier this page load — either a previous
+        // open of this same modal, or the gate carry-through below.
+        showStep('2a');
+      } else if (gateMatch) {
+        state.phone = gateMatch.phone;
+        phoneInput.value = gateMatch.phone;
+        try { localStorage.setItem('jessi-rsvp-phone', gateMatch.phone); } catch (e) {}
+        renderMatchedGuest(gateMatch);
+        gateMatch = null; // one-time carry-through, consumed
+        try { sessionStorage.removeItem('jessi-gate-match'); } catch (e) {}
+        showStep('2a');
       } else {
         showStep('1');
       }
@@ -424,14 +490,8 @@
       lookupBtn.textContent = window.i18n.translate('step5Submitting', document.documentElement.lang);
       lookupPhone(phone).then(function (result) {
         if (result && result.found) {
-          state.matched = true;
-          state.guest = result;
-          state.name = result.name;
           try { localStorage.setItem('jessi-rsvp-phone', phoneInput.value); } catch (e) {}
-          document.getElementById('rsvp-guest-greeting').hidden = false;
-          document.getElementById('rsvp-guest-name').textContent = result.name;
-          document.getElementById('rsvp-name-field').hidden = true;
-          maybeShowLangHint(result.lang);
+          renderMatchedGuest(result);
           showStep('2a');
         } else {
           state.matched = false;
@@ -758,12 +818,28 @@
   }
 
   /* ==========================================================
+     Pause music when the tab/app is backgrounded, resume on return
+     ========================================================== */
+  function initBackgroundAudioPause() {
+    var music = document.getElementById('music');
+    if (!music) return;
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        if (!music.paused) music.pause();
+      } else if (envelopeOpened && music.paused) {
+        music.play().catch(function () {});
+      }
+    });
+  }
+
+  /* ==========================================================
      Boot
      ========================================================== */
   document.addEventListener('DOMContentLoaded', function () {
     initLangToggle();
     initEnvelope();
     initMusicToggle();
+    initBackgroundAudioPause();
     initReveals();
     initItinerarySparkleFallback();
     initRsvpModal();

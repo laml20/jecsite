@@ -268,6 +268,39 @@ a { color: inherit; }
    ========================================================================== */
 #invitation-screen { position: relative; }
 
+/* Scroll affordance — shown once the invitation reveals, dismissed for
+   good the moment the guest scrolls at all. */
+.scroll-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 400ms var(--ease-soft);
+}
+.scroll-hint.is-visible { opacity: 1; }
+.scroll-hint__chevron {
+  width: 22px;
+  height: 11px;
+  color: var(--gold-600);
+  opacity: 0.5;
+  margin-top: -5px;
+  animation: chevron-pulse 1.6s ease-in-out infinite;
+}
+.scroll-hint__chevron--second { animation-delay: 0.25s; }
+@keyframes chevron-pulse {
+  0%, 100% { opacity: 0.2; transform: translateY(0); }
+  50%      { opacity: 0.5; transform: translateY(4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-hint__chevron { animation: none; opacity: 0.5; }
+}
+
 .invitation { max-width: 480px; margin-inline: auto; padding-inline: 36px; position: relative; }
 @media (min-width: 900px) {
   .invitation { max-width: 920px; }

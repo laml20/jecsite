@@ -6,7 +6,20 @@
 <title>Mis Quince Jessica</title>
 <meta name="description" content="Invitación — Mis XV Años, Jessica Anahí Mendoza">
 <meta name="robots" content="noindex, nofollow">
-<!-- No OG image with her photo (§11) — using the envelope art only once a real export exists. -->
+
+<!-- Link-preview image (§11) — the envelope art, never her photo, since
+     this renders in every group chat the link gets forwarded to. -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://misquincejessica.com/a7f3k9/">
+<meta property="og:title" content="Mis Quince Jessica">
+<meta property="og:description" content="Invitación — Mis XV Años, Jessica Anahí Mendoza">
+<meta property="og:image" content="https://misquincejessica.com/assets/img/invitacion.png">
+<meta property="og:image:width" content="1080">
+<meta property="og:image:height" content="807">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mis Quince Jessica">
+<meta name="twitter:description" content="Invitación — Mis XV Años, Jessica Anahí Mendoza">
+<meta name="twitter:image" content="https://misquincejessica.com/assets/img/invitacion.png">
 
 <!-- Preload the two faces visible on screen 1. Files land per checklist.md §4;
      until then this is a harmless miss. -->
@@ -55,6 +68,11 @@
 
 <!-- ============================== SCREEN 2 ============================== -->
 <main id="invitation-screen">
+
+  <div class="scroll-hint" id="scroll-hint" aria-hidden="true">
+    <svg class="scroll-hint__chevron" viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l10 8 10-8"/></svg>
+    <svg class="scroll-hint__chevron scroll-hint__chevron--second" viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l10 8 10-8"/></svg>
+  </div>
 
   <!-- 1. Hero -->
   <section class="hero">
