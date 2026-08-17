@@ -59,9 +59,9 @@
 
       // RSVP
       rsvpHeading: 'Confirmar Asistencia',
-      rsvpBody: '¡Su presencia es muy importante para nosotros! Les solicitamos amablemente confirmar su asistencia antes del 15 de agosto de 2026',
+      rsvpBody: '¡Su presencia es muy importante para nosotros! Les solicitamos amablemente confirmar su asistencia antes del 19 de agosto de 2026',
       rsvpButton: 'Confirmar Asistencia',
-      rsvpDeadline: 'Confirma antes del 15 de agosto de 2026.',
+      rsvpDeadline: 'Confirma antes del 19 de agosto de 2026.',
       rsvpAlreadyConfirmed: 'Ya confirmaste — ¿cambiar?',
 
       // Closing
@@ -164,9 +164,9 @@
       giftsBody: 'Your presence is the most meaningful gift of all! If you would like to give something to the quinceañera, it is deeply appreciated 💵✉️',
 
       rsvpHeading: 'RSVP',
-      rsvpBody: 'Your presence means so much to us! Please kindly confirm your attendance by August 15, 2026',
+      rsvpBody: 'Your presence means so much to us! Please kindly confirm your attendance by August 19, 2026',
       rsvpButton: 'RSVP',
-      rsvpDeadline: 'Please confirm by August 15, 2026.',
+      rsvpDeadline: 'Please confirm by August 19, 2026.',
       rsvpAlreadyConfirmed: "You're confirmed — change your response?",
 
       closing: 'Thank you for joining us and for being part of this important moment in my life',
