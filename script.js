@@ -13,6 +13,11 @@
   // would run the RSVP modal in mock mode; live endpoint is wired in.
   var RSVP_ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbzId7wRB-NnlTPxSx86KNwkV2Db08nKNdIA15jdifLa7VDkHnROcMrrIsxUm4ZmBqg/exec';
 
+  // §9.5 — typed into the phone field, bypasses the guest-list lookup and
+  // opens a blank RSVP form (name + real phone + adults/kids) for guests
+  // who aren't on the list but were told this code directly.
+  var RSVP_MANUAL_CODE = '826';
+
   // Mirrors the Invitados sheet shape (§9.2) for local testing.
   var MOCK_GUESTS = [
     { phone: '2815550134', name: 'Familia Ramírez', allotment: 5, lang: 'es' },
@@ -370,10 +375,12 @@
     var closeBtn = document.getElementById('rsvp-close');
     var phoneInput = document.getElementById('rsvp-phone');
     var altPhoneInput = document.getElementById('rsvp-alt-phone');
+    var realPhoneInput = document.getElementById('rsvp-real-phone-input');
     formatPhoneInput(phoneInput);
     formatPhoneInput(altPhoneInput);
+    formatPhoneInput(realPhoneInput);
 
-    var state = { phone: '', matched: false, guest: null, name: '', attending: null, adults: 1, kids: 0, extra: 0, reason: '', altPhone: '', message: '' };
+    var state = { phone: '', matched: false, guest: null, name: '', attending: null, adults: 1, kids: 0, extra: 0, reason: '', altPhone: '', message: '', manualEntry: false };
     var lastFocused = null;
 
     // §9.4 — a guest who already matched on the bare-domain gate page
@@ -404,9 +411,11 @@
       state.matched = true;
       state.guest = result;
       state.name = result.name;
+      state.manualEntry = false;
       document.getElementById('rsvp-guest-greeting').hidden = false;
       document.getElementById('rsvp-guest-name').textContent = result.name;
       document.getElementById('rsvp-name-field').hidden = true;
+      document.getElementById('rsvp-real-phone-field').hidden = true;
       maybeShowLangHint(result.lang);
     }
 
@@ -433,6 +442,7 @@
         document.getElementById('rsvp-guest-name').textContent = already.name;
         document.getElementById('rsvp-guest-greeting').hidden = false;
         document.getElementById('rsvp-name-field').hidden = true;
+        document.getElementById('rsvp-real-phone-field').hidden = true;
         document.getElementById('rsvp-message').value = state.message;
         if (state.attending) {
           document.getElementById('rsvp-cap-notice').hidden = true;
@@ -485,6 +495,19 @@
     lookupBtn.addEventListener('click', function () {
       var phone = normalizePhone(phoneInput.value);
       if (!phone) return;
+
+      if (phone === RSVP_MANUAL_CODE) {
+        state.phone = '';
+        state.matched = false;
+        state.manualEntry = true;
+        document.getElementById('rsvp-guest-greeting').hidden = true;
+        document.getElementById('rsvp-name-field').hidden = false;
+        document.getElementById('rsvp-real-phone-field').hidden = false;
+        document.getElementById('rsvp-lang-hint').hidden = true;
+        showStep('2a');
+        return;
+      }
+
       state.phone = phone;
       lookupBtn.setAttribute('disabled', 'disabled');
       lookupBtn.textContent = window.i18n.translate('step5Submitting', document.documentElement.lang);
@@ -511,8 +534,10 @@
     document.querySelector('[data-action="continue-anyway"]').addEventListener('click', function () {
       state.matched = false;
       state.guest = null;
+      state.manualEntry = false;
       document.getElementById('rsvp-guest-greeting').hidden = true;
       document.getElementById('rsvp-name-field').hidden = false;
+      document.getElementById('rsvp-real-phone-field').hidden = true;
       document.getElementById('rsvp-lang-hint').hidden = true;
       showStep('2a');
     });
@@ -536,6 +561,7 @@
     document.querySelector('[data-action="attend-yes"]').addEventListener('click', function () {
       state.attending = true;
       if (!state.matched) state.name = document.getElementById('rsvp-name-input').value.trim();
+      if (state.manualEntry) state.phone = normalizePhone(realPhoneInput.value);
       state.adults = 1; state.kids = 0; state.extra = 0; state.reason = '';
       document.getElementById('rsvp-cap-notice').hidden = true;
       updateStepperDisplay();
@@ -545,6 +571,7 @@
     document.querySelector('[data-action="attend-no"]').addEventListener('click', function () {
       state.attending = false;
       if (!state.matched) state.name = document.getElementById('rsvp-name-input').value.trim();
+      if (state.manualEntry) state.phone = normalizePhone(realPhoneInput.value);
       state.adults = 0; state.kids = 0; state.extra = 0;
       showStep('4');
     });
